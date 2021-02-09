@@ -49,9 +49,7 @@ function hash_outputs() {
       | sed "s://:/:"
 }
 
-function hash_jdk_outputs() {
-  # runfiles/MANIFEST & runfiles_manifest contain absolute path, ignore.
-  # ar on OS-X is non-deterministic, ignore .a files.
+function hash_all_outputs() {
   find . \
       -type f \
       -exec $shasum {} + \
@@ -77,10 +75,10 @@ function test_determinism()  {
       //src:bazel
     hash_outputs >"${TEST_TMPDIR}/sum1"
 
-    mkdir ${TEST_TMPDIR}/jdk1
-    unzip bazel-bin/src/package_jdk_minimal.zip -d ${TEST_TMPDIR}/jdk1
-    cd ${TEST_TMPDIR}/jdk1
-    hash_jdk_outputs >"${TEST_TMPDIR}/jdk_sum1"
+    mkdir ${TEST_TMPDIR}/jar1
+    unzip bazel-bin/src/main/java/com/google/devtools/build/lib/bazel/BazelServer_deploy.jar -d ${TEST_TMPDIR}/jar1
+    cd ${TEST_TMPDIR}/jar1
+    hash_all_outputs >"${TEST_TMPDIR}/jar_sum1"
     cd "${workdir}"
 
     # Build Bazel twice.
@@ -94,13 +92,13 @@ function test_determinism()  {
       //src:bazel
     hash_outputs >"${TEST_TMPDIR}/sum2"
 
-    mkdir ${TEST_TMPDIR}/jdk2
-    unzip bazel-bin/src/package_jdk_minimal.zip -d ${TEST_TMPDIR}/jdk2
-    cd ${TEST_TMPDIR}/jdk2
-    hash_jdk_outputs >"${TEST_TMPDIR}/jdk_sum2"
+    mkdir ${TEST_TMPDIR}/jar2
+    unzip bazel-bin/src/main/java/com/google/devtools/build/lib/bazel/BazelServer_deploy.jar -d ${TEST_TMPDIR}/jar2
+    cd ${TEST_TMPDIR}/jar2
+    hash_all_outputs >"${TEST_TMPDIR}/jar_sum2"
     cd "${workdir}"
 
-    if ! diff -U0 "${TEST_TMPDIR}/jdk_sum1" "${TEST_TMPDIR}/jdk_sum2" >$TEST_log; then
+    if ! diff -U0 "${TEST_TMPDIR}/jar_sum1" "${TEST_TMPDIR}/jar_sum2" >$TEST_log; then
       fail "Non-deterministic outputs found!"
     fi
 

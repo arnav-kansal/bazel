@@ -76,9 +76,13 @@ function test_determinism()  {
     hash_outputs >"${TEST_TMPDIR}/sum1"
 
     mkdir ${TEST_TMPDIR}/jar1
-    unzip bazel-bin/src/main/java/com/google/devtools/build/lib/bazel/BazelServer_deploy.jar -d ${TEST_TMPDIR}/jar1
+    unzip -q bazel-bin/src/main/java/com/google/devtools/build/lib/bazel/BazelServer_deploy.jar -d ${TEST_TMPDIR}/jar1
     cd ${TEST_TMPDIR}/jar1
     hash_all_outputs >"${TEST_TMPDIR}/jar_sum1"
+    echo
+    echo build-data.properties 1
+    cat build-data.properties
+    echo
     cd "${workdir}"
 
     # Build Bazel twice.
@@ -93,11 +97,17 @@ function test_determinism()  {
     hash_outputs >"${TEST_TMPDIR}/sum2"
 
     mkdir ${TEST_TMPDIR}/jar2
-    unzip bazel-bin/src/main/java/com/google/devtools/build/lib/bazel/BazelServer_deploy.jar -d ${TEST_TMPDIR}/jar2
+    unzip -q bazel-bin/src/main/java/com/google/devtools/build/lib/bazel/BazelServer_deploy.jar -d ${TEST_TMPDIR}/jar2
     cd ${TEST_TMPDIR}/jar2
     hash_all_outputs >"${TEST_TMPDIR}/jar_sum2"
+    echo
+    echo build-data.properties 2
+    cat build-data.properties
+    echo
     cd "${workdir}"
 
+    echo diffing build data
+    diff "${TEST_TMPDIR}/jar1/build-data.properties" "${TEST_TMPDIR}/jar2/build-data.properties"
     if ! diff -U0 "${TEST_TMPDIR}/jar_sum1" "${TEST_TMPDIR}/jar_sum2" >$TEST_log; then
       fail "Non-deterministic outputs found!"
     fi

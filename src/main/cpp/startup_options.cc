@@ -481,20 +481,26 @@ StartupOptions::GetServerJavabaseAndType() const {
     return std::pair<blaze_util::Path, JavabaseType>(explicit_server_javabase_,
                                                      JavabaseType::EXPLICIT);
   }
+  BAZEL_LOG(WARNING) << "Getting javabase";
   if (default_server_javabase_.first.IsEmpty()) {
+    BAZEL_LOG(WARNING) << "Javabase 1";
     blaze_util::Path bundled_jre_path = GetEmbeddedJavabase();
     if (!bundled_jre_path.IsEmpty()) {
       // 2) Use a bundled JVM if we have one.
+      BAZEL_LOG(WARNING) << "Javabase 2";
       default_server_javabase_ = std::pair<blaze_util::Path, JavabaseType>(
           bundled_jre_path, JavabaseType::EMBEDDED);
     } else if (!autodetect_server_javabase) {
+      BAZEL_LOG(WARNING) << "Javabase 3";
       BAZEL_DIE(blaze_exit_code::LOCAL_ENVIRONMENTAL_ERROR)
           << "Could not find embedded or explicit server javabase, and "
              "--noautodetect_server_javabase is set.";
     } else {
+      BAZEL_LOG(WARNING) << "Javabase 4";
       // 3) Otherwise fall back to using the default system JVM.
       blaze_util::Path system_javabase = GetSystemJavabase();
       if (system_javabase.IsEmpty()) {
+        BAZEL_LOG(WARNING) << "Javabase 5";
         BAZEL_DIE(blaze_exit_code::LOCAL_ENVIRONMENTAL_ERROR)
             << "Could not find system javabase. Ensure JAVA_HOME is set, or "
                "javac is on your PATH.";
@@ -503,6 +509,7 @@ StartupOptions::GetServerJavabaseAndType() const {
           system_javabase, JavabaseType::SYSTEM);
     }
   }
+  BAZEL_LOG(WARNING) << "Returning Javabase " << default_server_javabase_.first.AsPrintablePath();
   return default_server_javabase_;
 }
 

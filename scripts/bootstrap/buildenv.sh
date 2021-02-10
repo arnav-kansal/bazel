@@ -115,6 +115,10 @@ msys*|mingw*|cygwin*)
   JAVA_HOME="${JAVA_HOME//\\//}"
 esac
 
+echo =====================================
+echo JAVA_HOME=$JAVA_HOME
+echo =====================================
+
 EXE_EXT=""
 if [ "${PLATFORM}" == "windows" ]; then
   # Extension for executables.

@@ -359,7 +359,7 @@ public class DeployArchiveBuilder {
             buildInfoArtifacts,
             classpathResources,
             runtimeClasspath.build(),
-            false,
+            includeBuildData,
             compression,
             launcher,
             usingNativeSinglejar,
